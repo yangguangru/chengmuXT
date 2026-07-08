@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>留学录取智能评估系统</title>
+  <style>
+    @font-face {
+      font-family: 'InstrumentSans';
+      src: url('./_shared/fonts/InstrumentSans-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'InstrumentSans';
+      src: url('./_shared/fonts/InstrumentSans-Bold.ttf') format('truetype');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'GeistMono';
+      src: url('./_shared/fonts/GeistMono-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+  </style>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg2: #f5f7fa;
+      --bg3: #eef2f7;
+      --ink: #1a2332;
+      --muted: #6b7785;
+      --rule: #e6e9ef;
+      --accent: #1e5f8e;
+      --accent2: #c9622e;
+      --accent3: #2a9d8f;
+      --reach: #c9622e;
+      --match: #1e5f8e;
+      --safe: #2a9d8f;
+      --warn: #d4a017;
+      --purple: #7c3aed;
+      --cross-near: #2a9d8f;
+      --cross-medium: #d4a017;
+      --cross-far: #c9622e;
+      --bg-cross-near: #e8f5ee;
+      --bg-cross-medium: #fef9f0;
+      --bg-cross-far: #fef0f0;
+      --font: 'InstrumentSans', "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
+      --font-mono: 'GeistMono', "Consolas", monospace;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg2);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ============ Header ============ */
+    header.app-header {
+      background: linear-gradient(135deg, #1a2332 0%, #1e5f8e 100%);
+      color: #fff;
+      padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2rem);
+    }
+    header.app-header .wrap { max-width: 1280px; margin: 0 auto; }
+    header.app-header h1 {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    header.app-header .sub {
+      font-size: clamp(0.78rem, 1.8vw, 0.88rem);
+      opacity: 0.85;
+    }
+    header.app-header .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(0.5rem, 1.5vw, 1.5rem);
+      margin-top: 0.6rem;
+      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+      opacity: 0.8;
+    }
+    header.app-header .stats span {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      opacity: 1;
+      color: #7ec8e3;
+    }
+
+    /* ============ Layout ============ */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(0.75rem, 2vw, 1.5rem);
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+    @media (min-width: 900px) {
+      .main-grid {
+        grid-template-columns: 380px 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* ============ Panel (表单) ============ */
+    .panel {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 1.5rem);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .panel h2 {
+      font-size: clamp(0.95rem, 2vw, 1.05rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .panel .section-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 1.2rem 0 0.7rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--rule);
+    }
+    .panel .section-label:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* ============ Form Fields ============ */
+    .form-group { margin-bottom: 0.9rem; }
+    .form-group label {
+      display: block;
+      font-size: clamp(0.82rem, 1.5vw, 0.88rem);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+    .form-group label .req { color: var(--accent2); }
+    .form-group .hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+    .form-group .hint.warn { color: var(--accent2); }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: clamp(0.55rem, 1.5vw, 0.65rem) clamp(0.6rem, 2vw, 0.8rem);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-sm);
+      font-size: clamp(16px, 2vw, 0.95rem); /* 16px min 防 iOS 缩放 */
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(30,95,142,0.12);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; gap: 0.7rem; }
+    }
+
+    /* GPA tabs */
+    .gpa-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0.5rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--rule);
+    }
+    .gpa-tab {
+      flex: 1;
+      padding: 0.5rem 0.6rem;
+      border: none;
+      background: var(--bg);
+      font-size: clamp(0.8rem, 1.5vw, 0.88rem);
+      font-weight: 600;
+      font-family: var(--font);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .gpa-tab.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .gpa-tab:not(.active):active { background: var(--bg3); }
+    .gpa-switch-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      transition: color 0.2s;
+    }
+
+    /* 院校搜索下拉 */
+    .school-search-wrap { position: relative; }
+    #school-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      max-height: 280px;
+      overflow-y: auto;
+      margin-top: 2px;
+    }
+    .sd-item {
+      padding: 0.65rem 0.8rem;
+      font-size: clamp(0.85rem, 1.5vw, 0.92rem);
+      cursor: pointer;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.15s;
+    }
+    .sd-item:last-child { border-bottom: none; }
+    .sd-item:active, .sd-item:hover { background: var(--bg2); }
+    .sd-item small { color: var(--muted); font-size: 0.75rem; margin-left: 0.4rem; }
+
+    /* 层次徽章 */
+    .layer-badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: clamp(0.72rem, 1.2vw, 0.78rem);
+      font-weight: 700;
+      margin-top: 0.35rem;
+    }
+    .layer-badge.l985 { background: #e8f0fe; color: #1a56db; }
+    .layer-badge.l211 { background: #fef3e8; color: #c9622e; }
+    .layer-badge.l双非 { background: #e8f5ee; color: #2a9d8f; }
+    .layer-badge.l中外 { background: #f0e8fe; color: #7c3aed; }
+
+    /* 跨专业徽章 */
+    .cross-badge {
+      display: inline-block;
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: clamp(0.78rem, 1.3vw, 0.85rem);
+      font-weight: 700;
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+    .cross-badge.same { background: #e8f5ee; color: #2a9d8f; }
+    .cross-badge.near { background: var(--bg-cross-near); color: var(--cross-near); }
+    .cross-badge.medium { background: var(--bg-cross-medium); color: var(--cross-medium); }
+    .cross-badge.far { background: var(--bg-cross-far); color: var(--cross-far); }
+
+    /* 软背景复选框 */
+    .check-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 0.55rem;
+      background: var(--bg2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: clamp(0.78rem, 1.3vw, 0.85rem);
+      font-weight: 500;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .check-item:active { background: var(--bg3); }
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+    .check-item .icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* 语言选择 */
+    .lang-row { display: flex; gap: 0.4rem; align-items: start; }
+    .lang-row select { flex: 1; }
+
+    /* 地区多选 */
+    .region-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .region-checks label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: clamp(0.8rem, 1.3vw, 0.88rem);
+      cursor: pointer;
+      padding: 0.45rem 0.6rem;
+      background: var(--bg2);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .region-checks label:active { background: var(--bg3); }
+    .region-checks input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    /* 提交按钮 */
+    .btn-eval {
+      width: 100%;
+      padding: clamp(0.7rem, 2vw, 0.85rem);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: clamp(0.95rem, 2vw, 1.05rem);
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.8rem;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-eval:hover { background: #174a72; }
+    .btn-eval:active { transform: scale(0.98); background: #134462; }
+    .btn-eval:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+    /* 移动端底部固定按钮 */
+    .btn-eval-fixed {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px)) 1rem;
+      background: linear-gradient(to top, rgba(245,247,250,0.98) 0%, rgba(245,247,250,0.85) 100%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    @media (max-width: 899px) { .btn-eval-fixed { display: block; } }
+    .btn-eval-fixed .btn-eval { margin-top: 0; box-shadow: 0 2px 12px rgba(30,95,142,0.25); }
+
+    /* ============ Results ============ */
+    .results { min-height: 300px; }
+    .results-empty {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: clamp(2rem, 6vw, 3rem) 2rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .results-empty .icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+    .results-empty p { font-size: clamp(0.85rem, 1.5vw, 0.95rem); line-height: 1.7; }
+
+    .result-section {
+      background: var(--bg);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .result-header {
+      padding: clamp(0.8rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+      color: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .result-header.reach { background: linear-gradient(135deg, #c9622e, #d9744a); }
+    .result-header.match { background: linear-gradient(135deg, #1e5f8e, #2a7ab0); }
+    .result-header.safe { background: linear-gradient(135deg, #2a9d8f, #34b8a8); }
+    .result-header h3 { font-size: clamp(0.95rem, 2vw, 1.1rem); font-weight: 700; flex-shrink: 0; }
+    .result-header .desc { font-size: clamp(0.72rem, 1.3vw, 0.78rem); opacity: 0.9; flex: 1; min-width: 0; }
+    .result-header .count {
+      background: rgba(255,255,255,0.25);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: clamp(0.8rem, 1.3vw, 0.85rem);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    /* 学生画像 */
+    .student-summary {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: clamp(0.9rem, 2vw, 1.25rem) clamp(1rem, 2.5vw, 1.5rem);
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border-left: 4px solid var(--accent);
+    }
+    .student-summary h3 { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; font-weight: 600; }
+    .student-summary .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .student-summary .tag {
+      padding: 0.25rem 0.6rem;
+      background: var(--bg2);
+      border-radius: 6px;
+      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .student-summary .tag .v { color: var(--accent); font-family: var(--font-mono); }
+    .student-summary .tag small { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
+
+    /* 推荐卡片 */
+    .rec-list { padding: 0; }
+    .rec-item {
+      padding: clamp(0.8rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+      border-bottom: 1px solid var(--rule);
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .rec-item:hover { background: var(--bg2); }
+    .rec-item:last-child { border-bottom: none; }
+    .rec-item-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .rec-item .school-name { font-size: clamp(0.9rem, 1.5vw, 1rem); font-weight: 700; }
+    .rec-item .region-tag {
+      font-size: clamp(0.68rem, 1vw, 0.74rem);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .rec-item .score {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .rec-item .score.reach { color: var(--reach); }
+    .rec-item .score.match { color: var(--match); }
+    .rec-item .score.safe { color: var(--safe); }
+    .rec-item .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+      color: var(--muted);
+    }
+    .rec-item .field-tag {
+      background: var(--bg2);
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .rec-item .field-tag .n { color: var(--accent); font-family: var(--font-mono); font-weight: 700; }
+    .rec-detail {
+      display: none;
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px dashed var(--rule);
+    }
+    .rec-item.expanded .rec-detail { display: block; }
+    .rec-detail .bar-row { margin-bottom: 0.55rem; }
+    .rec-detail .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(0.72rem, 1.1vw, 0.78rem);
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .rec-detail .bar-label .v { color: var(--ink); font-family: var(--font-mono); font-weight: 600; }
+    .rec-detail .bar-track {
+      height: 8px;
+      background: var(--bg3);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rec-detail .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      position: absolute;
+    }
+    .rec-detail .bar-marker {
+      position: absolute;
+      top: -3px;
+      width: 3px;
+      height: 14px;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+    .rec-detail .layer-info {
+      font-size: clamp(0.72rem, 1.1vw, 0.78rem);
+      color: var(--muted);
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.55rem;
+      background: var(--bg2);
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+
+    /* 注意事项卡片 */
+    .data-note {
+      background: #fff8e8;
+      border: 1px solid #f0d878;
+      border-radius: var(--radius-sm);
+      padding: clamp(0.75rem, 2vw, 1rem) clamp(0.9rem, 2.5vw, 1.25rem);
+      margin-bottom: 1rem;
+      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
+      color: #6b5a1e;
+      line-height: 1.7;
+    }
+    .data-note .title { font-weight: 700; margin-bottom: 0.3rem; color: #8a6d12; }
+
+    .disclaimer {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: clamp(0.9rem, 2vw, 1.25rem) clamp(1rem, 2.5vw, 1.5rem);
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--warn);
+      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .disclaimer strong { color: var(--ink); }
+
+    /* 移动端底部留白（给固定按钮让位） */
+    @media (max-width: 899px) {
+      .container { padding-bottom: 5rem; }
+    }
+
+    /* iPhone 底部安全区 */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .btn-eval-fixed { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="wrap">
+      <h1>🎓 留学录取智能评估系统</h1>
+      <div class="sub">基于 <strong id="stat-cases">34,328</strong> 条历史录取案例，智能匹配冲刺 / 匹配 / 保底方案</div>
+      <div class="stats">
+        <div>覆盖院校 <span id="stat-schools">94</span></div>
+        <div>专业组合 <span id="stat-combos">3,631</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="main-grid">
+      <!-- ============ 表单面板 ============ -->
+      <aside class="panel" id="form-panel">
+        <h2>📋 学生背景录入</h2>
+
+        <!-- 第一部分：基本背景 -->
+        <div class="section-label">🏫 院校与成绩</div>
+
+        <div class="form-group">
+          <label>本科院校 <span class="req">*</span></label>
+          <div class="school-search-wrap">
+            <input type="text" id="undergrad" placeholder="输入校名，支持缩写（如：哈工大、吉大…）" autocomplete="off">
+            <div id="school-dropdown"></div>
+          </div>
+          <div id="layer-display"></div>
+          <div class="hint">直接输入或点击下拉选择，支持常见缩写自动识别</div>
+        </div>
+
+        <div class="form-group">
+          <label>GPA <span class="req">*</span></label>
+          <div class="gpa-tabs">
+            <button class="gpa-tab active" data-scale="100">百分制</button>
+            <button class="gpa-tab" data-scale="4">4 分制</button>
+          </div>
+          <input type="number" id="gpa" min="0" max="100" step="0.01" placeholder="如 85.5" inputmode="decimal">
+          <input type="number" id="gpa-4" min="0" max="4.5" step="0.01" placeholder="如 3.5" inputmode="decimal" style="display:none;">
+          <div class="hint" id="gpa-hint">4分制请切换标签，系统会自动换算</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>本科专业领域 <span class="req">*</span></label>
+            <select id="undergrad-major">
+              <option value="计算机/AI/数据">计算机 / AI / 数据</option>
+              <option value="电子/通信/自动化">电子 / 通信 / 自动化</option>
+              <option value="金融/会计">金融 / 会计</option>
+              <option value="管理/市场">管理 / 市场 / 商业分析</option>
+              <option value="经济学">经济学</option>
+              <option value="机械/制造/航空">机械 / 制造 / 航空</option>
+              <option value="土木/环境/能源">土木 / 环境 / 能源</option>
+              <option value="材料/化工">材料 / 化工</option>
+              <option value="数学/统计">数学 / 统计</option>
+              <option value="物化生/自然科学">物理 / 化学 / 生物</option>
+              <option value="法学">法学</option>
+              <option value="教育">教育</option>
+              <option value="传媒/新闻">传媒 / 新闻 / 广告</option>
+              <option value="语言/文学">语言 / 文学 / 翻译</option>
+              <option value="艺术/设计">艺术 / 设计</option>
+              <option value="医学/健康">医学 / 健康</option>
+              <option value="社科/政治/公共">社科 / 政治 / 公共管理</option>
+              <option value="建筑/城市/景观">建筑 / 城市 / 景观</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>意向专业领域 <span class="req">*</span></label>
+            <select id="field">
+              <option value="计算机/AI/数据">计算机 / AI / 数据</option>
+              <option value="电子/通信/自动化">电子 / 通信 / 自动化</option>
+              <option value="金融/会计">金融 / 会计</option>
+              <option value="管理/市场">管理 / 市场 / 商业分析</option>
+              <option value="经济学">经济学</option>
+              <option value="机械/制造/航空">机械 / 制造 / 航空</option>
+              <option value="土木/环境/能源">土木 / 环境 / 能源</option>
+              <option value="材料/化工">材料 / 化工</option>
+              <option value="数学/统计">数学 / 统计</option>
+              <option value="物化生/自然科学">物理 / 化学 / 生物</option>
+              <option value="法学">法学</option>
+              <option value="教育">教育</option>
+              <option value="传媒/新闻">传媒 / 新闻 / 广告</option>
+              <option value="语言/文学">语言 / 文学 / 翻译</option>
+              <option value="艺术/设计">艺术 / 设计</option>
+              <option value="医学/健康">医学 / 健康</option>
+              <option value="社科/政治/公共">社科 / 政治 / 公共管理</option>
+              <option value="建筑/城市/景观">建筑 / 城市 / 景观</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+        </div>
+        <div id="cross-status" style="display:none;margin-bottom:0.5rem;"></div>
+
+        <div class="form-group">
+          <label>意向地区（可多选）</label>
+          <div class="region-checks" id="region-checks"></div>
+        </div>
+
+        <!-- 第二部分：语言成绩 -->
+        <div class="section-label">🗣️ 语言成绩</div>
+
+        <div class="form-group">
+          <label>语言类型与成绩</label>
+          <div class="lang-row">
+            <select id="lang-type">
+              <option value="">不填写（仅用 GPA 评估）</option>
+              <option value="ielts">雅思</option>
+              <option value="toefl">托福</option>
+              <option value="cet6">六级</option>
+            </select>
+            <div id="lang-input-group" style="display:none;flex:1;">
+              <input type="number" id="lang-score" min="0" max="120" step="0.5" placeholder="请输入成绩" inputmode="decimal" style="width:100%;">
+            </div>
+          </div>
+          <div class="hint">选择语言类型后填写成绩，系统自动转换为等效雅思分</div>
+        </div>
+
+        <!-- 第三部分：软背景 -->
+        <div class="section-label">🔬 软背景（可选）</div>
+        <div class="check-group">
+          <label class="check-item">
+            <input type="checkbox" id="cb-research"> <span class="icon">🧪</span> 科研项目
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="cb-intern"> <span class="icon">💼</span> 实习经历
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="cb-competition"> <span class="icon">🏆</span> 竞赛获奖
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="cb-paper"> <span class="icon">📄</span> 论文/专利
+          </label>
+        </div>
+        <div class="hint" style="margin-top:0.3rem;">勾选已有的经历类型，系统会给予相应的软背景加分（最多 +8 分）</div>
+
+        <button class="btn-eval" id="btn-eval" onclick="runEvaluation()">🚀 开始评估</button>
+      </aside>
+
+      <!-- ============ 结果区 ============ -->
+      <main class="results" id="results">
+        <div class="results-empty">
+          <div class="icon">🎓</div>
+          <p>请在左侧录入学生背景信息，点击「开始评估」<br>系统将基于历史录取数据匹配冲刺、匹配、保底方案</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 移动端底部固定按钮 -->
+  <div class="btn-eval-fixed">
+    <button class="btn-eval" onclick="runEvaluation()">🚀 开始评估</button>
+  </div>
+
+  <script src="./assets/data.js"></script>
+  <script src="./assets/app.js"></script>
+</body>
+</html>
