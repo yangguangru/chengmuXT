@@ -521,9 +521,9 @@
   function renderResults(student, tiers) {
     var html = '';
 
-    html += '<div class="data-note"><div class="title">📌 算法说明（V4）</div>';
-    html += '基于 <strong>' + DATA.meta.total_cases.toLocaleString() + ' 条</strong>历史录取案例。';
-    html += '<strong>V4 新增</strong>：① GPA 自动识别 4/100 分制；② 院校缩写/别名识别；③ 跨专业距离分级（近/中/远）；④ 软背景（科研/实习/竞赛/论文）加分；⑤ 多语言支持（雅思/托福/六级）。</div>';
+    html += '<div class="data-note"><div class="title">📌 算法说明</div>';
+    html += '基于历史录取案例。';
+    html += '<strong></strong>：① GPA 自动识别 4/100 分制；② 院校缩写/别名识别；③ 跨专业距离分级（近/中/远）；④ 软背景（科研/实习/竞赛/论文）加分；⑤ 多语言支持（雅思/托福/六级）。</div>';
 
     // 学生画像
     html += '<div class="student-summary"><h3>学生画像</h3><div class="tags">';
