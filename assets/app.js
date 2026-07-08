@@ -749,4 +749,71 @@
   document.getElementById('gpa-4').addEventListener('keydown', function(e) { if (e.key === 'Enter') runEvaluation(); });
   document.getElementById('lang-score').addEventListener('keydown', function(e) { if (e.key === 'Enter') runEvaluation(); });
 
+  // ==================== 10秒弹窗（诚霂留学引流） ====================
+  var POPUP_WECHAT = 'yloffer';
+
+  // 暴露为全局函数（供 inline onclick 调用）
+  window.closePopup = function() {
+    var ov = document.getElementById('popup-overlay');
+    if (ov) ov.classList.remove('show');
+  };
+
+  window.copyWechat = function() {
+    var wx = POPUP_WECHAT;
+    // 尝试复制到剪贴板
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(wx).then(function() {
+        showCopyToast('✅ 微信号已复制：' + wx);
+      }).catch(function() {
+        fallbackCopy(wx);
+      });
+    } else {
+      fallbackCopy(wx);
+    }
+  };
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showCopyToast('✅ 微信号已复制：' + text); }
+    catch(e) { showCopyToast('微信号：' + text + '（请手动复制）'); }
+    document.body.removeChild(ta);
+  }
+
+  function showCopyToast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(26,35,50,0.92);color:#fff;padding:0.8rem 1.2rem;border-radius:12px;font-size:0.9rem;z-index:9999;max-width:80vw;text-align:center;line-height:1.6;';
+    document.body.appendChild(t);
+    setTimeout(function() { t.style.transition='opacity 0.3s'; t.style.opacity='0'; }, 2000);
+    setTimeout(function() { if(t.parentNode) t.parentNode.removeChild(t); }, 2400);
+  }
+
+  // 10秒后弹窗（同一会话只弹一次）
+  function showPopupTimer() {
+    try {
+      if (sessionStorage.getItem('chengmu_popup_shown')) return;
+    } catch(e) {}
+    setTimeout(function() {
+      try { sessionStorage.setItem('chengmu_popup_shown', '1'); } catch(e) {}
+      var ov = document.getElementById('popup-overlay');
+      if (ov) ov.classList.add('show');
+    }, 10000);
+  }
+  showPopupTimer();
+
+  // 点击遮罩关闭
+  (function() {
+    var ov = document.getElementById('popup-overlay');
+    if (ov) {
+      ov.addEventListener('click', function(e) {
+        if (e.target === ov) ov.classList.remove('show');
+      });
+    }
+  })();
+
 })();

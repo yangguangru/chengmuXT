@@ -588,11 +588,153 @@
     @supports (padding-bottom: env(safe-area-inset-bottom)) {
       .btn-eval-fixed { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
     }
+
+    /* ============ 诚霂留学 品牌栏 ============ */
+    .brand-bar {
+      font-size: clamp(0.7rem, 1.5vw, 0.78rem);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      opacity: 0.75;
+      margin-bottom: 0.35rem;
+      color: #7ec8e3;
+    }
+
+    /* ============ 页面水印 ============ */
+    .page-watermark {
+      position: fixed;
+      bottom: 5rem;
+      right: 0.8rem;
+      writing-mode: vertical-rl;
+      font-size: clamp(0.62rem, 1.2vw, 0.72rem);
+      color: rgba(30, 95, 142, 0.12);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      pointer-events: none;
+      z-index: 1;
+      user-select: none;
+    }
+    @media (min-width: 900px) {
+      .page-watermark { bottom: 1.5rem; font-size: 0.72rem; }
+    }
+
+    /* ============ 10秒弹窗 ============ */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+    .popup-overlay.show { display: flex; }
+    .popup-card {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 360px;
+      width: 100%;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      position: relative;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .popup-header {
+      background: linear-gradient(135deg, #1e5f8e 0%, #2a9d8f 100%);
+      padding: 1.5rem 1.5rem 2.5rem;
+      text-align: center;
+      color: #fff;
+    }
+    .popup-header .emoji { font-size: 2.8rem; line-height: 1; }
+    .popup-header .title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+    }
+    .popup-body {
+      padding: 0 1.5rem 1.5rem;
+      margin-top: -1.5rem;
+      position: relative;
+    }
+    .popup-body .msg {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--ink);
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .popup-body .msg .hl { color: var(--accent); font-weight: 700; }
+    .wechat-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+      border: 2px dashed var(--accent);
+      border-radius: 14px;
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .wechat-card .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .wechat-card .id {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+    }
+    .wechat-card .copy-tip {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+    .popup-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .popup-btn:active { transform: scale(0.97); background: #174a72; }
+    .popup-close {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .popup-close:active { background: rgba(255,255,255,0.4); }
   </style>
 </head>
 <body>
   <header class="app-header">
     <div class="wrap">
+      <div class="brand-bar">✦ 诚霂留学 · ChengMu Education ✦</div>
       <h1>🎓 诚霂定校评估系统</h1>
       <div class="sub">基于以往历史录取案例，智能匹配冲刺 / 匹配 / 保底方案</div>
       <div class="stats">
@@ -749,6 +891,34 @@
   <!-- 移动端底部固定按钮 -->
   <div class="btn-eval-fixed">
     <button class="btn-eval" onclick="runEvaluation()">🚀 开始评估</button>
+  </div>
+
+  <!-- 页面水印 -->
+  <div class="page-watermark">诚霂留学 · CHENGMU</div>
+
+  <!-- 10秒弹窗 -->
+  <div class="popup-overlay" id="popup-overlay">
+    <div class="popup-card">
+      <button class="popup-close" onclick="closePopup()">✕</button>
+      <div class="popup-header">
+        <div class="emoji">🐰</div>
+        <div class="title">嗨～看到你啦！</div>
+      </div>
+      <div class="popup-body">
+        <div class="msg">
+          定校这事看着简单，其实门道超多的<br>
+          如果你对结果有疑问，或者想聊聊<br>
+          <span class="hl">选校策略、文书方向、申请节奏</span><br>
+          随时来找我呀～ 陪你一起搞定 🤝
+        </div>
+        <div class="wechat-card">
+          <div class="label">扫码或搜索微信添加</div>
+          <div class="id" id="wx-id">yloffer</div>
+          <div class="copy-tip">长按微信号可复制</div>
+        </div>
+        <button class="popup-btn" onclick="copyWechat()">📋 一键复制微信号</button>
+      </div>
+    </div>
   </div>
 
   <script src="./assets/data.js"></script>
