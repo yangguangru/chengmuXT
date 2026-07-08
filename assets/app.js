@@ -377,9 +377,12 @@
   var regionChecks = document.getElementById('region-checks');
   regions.forEach(function(r, i) {
     var lbl = document.createElement('label');
-    lbl.style.cssText = 'display:flex;align-items:center;gap:0.3rem;font-size:0.88rem;cursor:pointer;padding:0.45rem 0.6rem;background:var(--bg2);border-radius:8px;';
-    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = r; cb.checked = (i < 3);
-    lbl.appendChild(cb); lbl.appendChild(document.createTextNode(r));
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = r;
+    cb.checked = (i < 3);
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(r));
     regionChecks.appendChild(lbl);
   });
 
