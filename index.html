@@ -318,7 +318,7 @@
       position: relative;
       z-index: 1;
     }
-    .region-checks label {
+    .region-label {
       display: flex;
       align-items: center;
       gap: 0.35rem;
@@ -327,12 +327,19 @@
       padding: 0.5rem 0.65rem;
       background: var(--bg2);
       border-radius: var(--radius-sm);
-      transition: background 0.12s;
+      transition: background 0.12s, box-shadow 0.12s;
       -webkit-tap-highlight-color: transparent;
-      /* 不在 label 上设 user-select:none，iOS 会吞掉 checkbox 的 tap 事件 */
+      border: 1px solid transparent;
+      font-weight: 500;
     }
-    .region-checks label:active { background: #dde3ec; }
-    .region-checks input[type="checkbox"] {
+    .region-label:active { background: #dde3ec; }
+    .region-label.selected {
+      background: #e0ecf5;
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .region-label input[type="checkbox"] {
       width: 20px;
       height: 20px;
       min-width: 20px;
@@ -679,7 +686,13 @@
 
         <div class="form-group">
           <label>意向地区（可多选）</label>
-          <div class="region-checks" id="region-checks"></div>
+          <div class="region-checks" id="region-checks">
+            <label class="region-label selected"><input type="checkbox" value="中国香港" checked onchange="this.parentElement.classList.toggle('selected',this.checked)"> 中国香港</label>
+            <label class="region-label selected"><input type="checkbox" value="英国" checked onchange="this.parentElement.classList.toggle('selected',this.checked)"> 英国</label>
+            <label class="region-label selected"><input type="checkbox" value="新加坡" checked onchange="this.parentElement.classList.toggle('selected',this.checked)"> 新加坡</label>
+            <label class="region-label"><input type="checkbox" value="澳大利亚" onchange="this.parentElement.classList.toggle('selected',this.checked)"> 澳大利亚</label>
+            <label class="region-label"><input type="checkbox" value="美国" onchange="this.parentElement.classList.toggle('selected',this.checked)"> 美国</label>
+          </div>
         </div>
 
         <!-- 第二部分：语言成绩 -->

@@ -372,21 +372,8 @@
   undergradMajorSel.addEventListener('change', updateCrossStatus);
   fieldSel.addEventListener('change', updateCrossStatus);
 
-  // ==================== 地区多选 ====================
-  var regions = ['中国香港', '英国', '新加坡', '澳大利亚', '美国'];
-  var regionChecks = document.getElementById('region-checks');
-  regions.forEach(function(r, i) {
-    var lbl = document.createElement('label');
-    var cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.value = r;
-    cb.checked = (i < 3);
-    lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(r));
-    regionChecks.appendChild(lbl);
-  });
-
   // ==================== 语言类型切换 ====================
+  var regionChecks = document.getElementById('region-checks');
   var langTypeSelect = document.getElementById('lang-type');
   var langInputGroup = document.getElementById('lang-input-group');
   var langInput = document.getElementById('lang-score');
