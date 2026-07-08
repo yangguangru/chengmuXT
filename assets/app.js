@@ -802,7 +802,7 @@
       try { sessionStorage.setItem('chengmu_popup_shown', '1'); } catch(e) {}
       var ov = document.getElementById('popup-overlay');
       if (ov) ov.classList.add('show');
-    }, 10000);
+    }, 120000);
   }
   showPopupTimer();
 
