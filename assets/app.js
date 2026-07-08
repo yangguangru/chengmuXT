@@ -189,9 +189,10 @@
   }
 
   // ==================== 初始化 ====================
-  document.getElementById('stat-cases').textContent = DATA.meta.total_cases.toLocaleString();
-  document.getElementById('stat-schools').textContent = DATA.schools.length;
-  document.getElementById('stat-combos').textContent = DATA.meta.combos_count;
+  var el;
+  if (el = document.getElementById('stat-cases')) el.textContent = DATA.meta.total_cases.toLocaleString();
+  if (el = document.getElementById('stat-schools')) el.textContent = DATA.schools.length;
+  if (el = document.getElementById('stat-combos')) el.textContent = DATA.meta.combos_count;
 
   // ==================== ⭐ V4: 院校可搜索下拉 ====================
   var schoolInput = document.getElementById('undergrad');
